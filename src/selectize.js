@@ -22,7 +22,9 @@ var Selectize = function($input, settings) {
 		isInvalid        : false,
 		isLocked         : false,
 		isFocused        : false,
-		isInputHidden    : false,
+		/* <tiempo> */
+		isInputHidden    : !settings.typeahead,
+		/* </tiempo> */
 		isSetup          : false,
 		isShiftDown      : false,
 		isCmdDown        : false,
@@ -144,6 +146,12 @@ $.extend(Selectize.prototype, {
 		watchChildEvent($control, 'mousedown', '*:not(input)', function() { return self.onItemSelect.apply(self, arguments); });
 		autoGrow($control_input);
 
+		/* <tiempo> */
+		if (!settings.typeahead) {
+			self.hideInput();
+		}
+		/* </tiempo> */
+
 		$control.on({
 			mousedown : function() { return self.onMouseDown.apply(self, arguments); },
 			click     : function() { return self.onClick.apply(self, arguments); }
@@ -243,6 +251,10 @@ $.extend(Selectize.prototype, {
 		var field_label = self.settings.labelField;
 		var field_optgroup = self.settings.optgroupLabelField;
 
+		/* <tiempo> */
+		var selected_label = self.settings.selectedField ? self.settings.selectedField : self.settings.labelField;
+		/* </tiempo> */
+
 		var templates = {
 			'optgroup': function(data) {
 				return '<div class="optgroup">' + data.html + '</div>';
@@ -254,7 +266,9 @@ $.extend(Selectize.prototype, {
 				return '<div class="option">' + escape(data[field_label]) + '</div>';
 			},
 			'item': function(data, escape) {
-				return '<div class="item">' + escape(data[field_label]) + '</div>';
+				/* <tiempo> */
+				return '<div class="item">' + escape(data[selected_label]) + '</div>';
+				/* </tiempo> */
 			},
 			'option_create': function(data, escape) {
 				return '<div class="create">Add <strong>' + escape(data.input) + '</strong>&hellip;</div>';
@@ -433,7 +447,12 @@ $.extend(Selectize.prototype, {
 				return;
 			case KEY_BACKSPACE:
 			case KEY_DELETE:
-				self.deleteSelection(e);
+				/* <tiempo> */
+				if (self.settings.typeahead) {
+					self.deleteSelection(e);
+				}
+				/* </tiempo> */
+
 				return;
 		}
 		if (self.isFull() || self.isInputHidden) {
@@ -792,8 +811,14 @@ $.extend(Selectize.prototype, {
 	 * Restores input visibility.
 	 */
 	showInput: function() {
-		this.$control_input.css({opacity: 1, position: 'relative', left: 0});
-		this.isInputHidden = false;
+		/* <tiempo> */
+		var self = this;
+
+		if (self.settings.typeahead) {
+			self.$control_input.css({opacity: 1, position: 'relative', left: 0});
+			self.isInputHidden = false;  
+		}
+		/* </tiempo> */
 	},
 
 	/**

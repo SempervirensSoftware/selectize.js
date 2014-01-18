@@ -37,6 +37,11 @@ Selectize.defaults = {
 
 	dropdownParent: null,
 
+	/* <tiempo> */
+	typeahead: true,
+	selectedField: null,
+	/* </tiempo> */
+
 	/*
 	load            : null, // function(query, callback) { ... }
 	score           : null, // function(search) { ... }
